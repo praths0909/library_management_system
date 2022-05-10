@@ -296,6 +296,8 @@ class book_database{
                 return 1;
                 else
                 {
+                    if(all_books[i].owner!=userid)
+                    return 4;
                     all_books[i].available=1;
                     all_books[i].owner=-1;
                     return 2;
@@ -402,12 +404,51 @@ int lib_function_call()
         return lib_function_call();
     }
 }
+student_database sd;
+prof_database pd;
+lib_database ld;
+book_database bd;
+book remove_book_from_user(int userid,int bookid)
+{
+    for(int i=0;i<sd.all_students.size();i++)
+    {
+        if(sd.all_students[i].uid==userid)
+        {
+            for(int j=0;j<sd.all_students[i].sb.size();j++)
+            {
+                if(sd.all_students[i].sb[j].bid==bookid)
+                {
+                    book b=sd.all_students[i].sb[j];
+                    auto v=&(sd.all_students[i].sb);
+                    v->erase(v->begin()+j);
+                    // sd.all_students[i].sb.erase((sd.all_students[i].sb).begin()+j);
+                    return b;
+                }
+            }
+        }
+    }
+    for(int i=0;i<pd.all_prof.size();i++)
+    {
+        if(pd.all_prof[i].uid==userid)
+        {
+            for(int j=0;j<pd.all_prof[i].pb.size();j++)
+            {
+                if(pd.all_prof[i].pb[j].bid==bookid)
+                {
+                    book b=pd.all_prof[i].pb[j];
+                    auto v=&(pd.all_prof[i].pb);
+                    v->erase(v->begin()+j);
+                    // pd.all_prof[i].pb.erase((pd.all_prof[i].pb).begin()+j);
+                    return b;
+                }
+            }
+        }
+    }
+    // return bd.all_books[0];
+}
 int main()
 {
-    student_database sd;
-    prof_database pd;
-    lib_database ld;
-    book_database bd;
+    
     //----------------------------------------------------------------------------------------------------------------
     book b1;
     b1.title="thermo";
@@ -504,6 +545,8 @@ int main()
                                 cout<<"Wrong password\n";
                                 flag=0;
                             }
+                            else
+                            cout<<"\n\nWelcome , "<<curr.name<<"\n\n";
                         }
                     if(flag==0)
                     continue;
@@ -547,9 +590,13 @@ int main()
                             else if(p==1)
                             cout<<"\nBook currently not available\n";
                             else{
-                                curr.sb.push_back(bd.search_book(z));
+                                book b=bd.search_book(z);
+                                curr.sb.push_back(b);
                                 curr.book_issued++;
                                 cout<<"\nBook issued\n";
+                                cout<<"\nDetails of book issued : \n";
+                                cout<<"Book Title : "<<b.title<<"\n";
+                                cout<<"Book Author : "<<b.author<<"\n\n\n";
                             }
                             }
                             cout<<"\nPress Enter to go back\n";
@@ -566,8 +613,14 @@ int main()
                             cout<<"\nThis Book is not present in library\n";
                             else if(p==1)
                             cout<<"\nBook is already unissued\n";
+                            else if(p==4)
+                            cout<<"\nYou are not the owner of book , you can't return it\n";
                             else{
-                                //remove book in student
+                                book b=remove_book_from_user(curr.uid,z);
+                                cout<<"Book Details : \n";
+                                cout<<"Book ID : "<<b.bid<<"\n"; 
+                                cout<<"Book title : "<<b.title<<"\n";
+                                cout<<"Book author : "<<b.author<<"\n";
                                 cout<<"\nBook Returned\n";
                             }
                             cout<<"\nPress Enter to go back\n";
@@ -633,7 +686,7 @@ int main()
                     newst.password=x;
                     sd.add_student(newst);
                     // cout<<"\nSuccessfully Registered     \n"<<newst.name<<"    "<<newst.password;
-                    cout<<"\n Student with 'user id' :  "<<newst.uid<<",Name : "<<newst.name<<" Successfully Registered\n";
+                    cout<<"\nStudent with 'user id' : "<<newst.uid<<", Name : "<<newst.name<<" Successfully Registered\n";
                     continue;
 
                 }
@@ -674,6 +727,8 @@ int main()
                                 cout<<"\nWrong password\n";
                                 flag=0;
                             }
+                            else
+                            cout<<"\n\nWelcome , "<<curr.name<<"\n\n";
                         }
                     if(flag==0)
                     continue;
@@ -731,9 +786,15 @@ int main()
                             if(p==3)
                             cout<<"\nThis Book is not present in library\n";
                             else if(p==1)
-                            cout<<"\nBook is alredy unissued\n";
+                            cout<<"\nBook is already unissued\n";
+                            else if(p==4)
+                            cout<<"\nYou are not the owner of book , you can't return it\n";
                             else{
-                                //remove book in professor
+                                book b=remove_book_from_user(curr.uid,z);
+                                cout<<"Book Details : \n";
+                                cout<<"Book ID : "<<b.bid<<"\n"; 
+                                cout<<"Book title : "<<b.title<<"\n";
+                                cout<<"Book author : "<<b.author<<"\n";
                                 cout<<"\nBook Returned\n";
                             }
                             cout<<"\nPress Enter to go back\n";
@@ -791,11 +852,12 @@ int main()
                     newst.name=x;
                     cout<<"Enter your password : ";
                     //cin>>x;
-                    getchar();
+                    // getchar();
                     getline(cin,x);
                     newst.password=x;
                     pd.add_prof(newst);
-                    cout<<"\nSuccessfully Registered\n";
+                    cout<<"\nProfessor with 'user id' : "<<newst.uid<<", Name : "<<newst.name<<" Successfully Registered\n";
+                    // cout<<"\nStudent with 'user id' : "<<newst.uid<<", Name : "<<newst.name<<" Successfully Registered\n";
                     continue;
                 }
             }
