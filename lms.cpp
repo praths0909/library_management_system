@@ -245,11 +245,16 @@ class book_database{
     void display_available()
     {
         cout<<"\n";
+        int count=0;
         for(int i=0;i<all_books.size();i++)
         {
-            if(all_books[i].available==1)
-              cout<<"Book ID : "<<all_books[i].bid<<"      Book Name : "<<all_books[i].title<<"      Book Author : "<<all_books[i].author<<"     Book owner id: "<<all_books[i].owner<<"\n";
-        }
+            if(all_books[i].available==1){
+            cout<<"Book ID : "<<all_books[i].bid<<"      Book Name : "<<all_books[i].title<<"      Book Author : "<<all_books[i].author<<"     Book owner id: "<<all_books[i].owner<<"\n";
+            count++;
+            }
+            }
+            if(count==0)
+            cout<<"\nWe are sorry !\nNo Book is available for now.\n\n";
     }
     int issue_book(int bookid,int userid)
     {
@@ -408,44 +413,54 @@ student_database sd;
 prof_database pd;
 lib_database ld;
 book_database bd;
-book remove_book_from_user(int userid,int bookid)
-{
-    for(int i=0;i<sd.all_students.size();i++)
-    {
-        if(sd.all_students[i].uid==userid)
-        {
-            for(int j=0;j<sd.all_students[i].sb.size();j++)
-            {
-                if(sd.all_students[i].sb[j].bid==bookid)
-                {
-                    book b=sd.all_students[i].sb[j];
-                    auto v=&(sd.all_students[i].sb);
-                    v->erase(v->begin()+j);
-                    // sd.all_students[i].sb.erase((sd.all_students[i].sb).begin()+j);
-                    return b;
-                }
-            }
-        }
-    }
-    for(int i=0;i<pd.all_prof.size();i++)
-    {
-        if(pd.all_prof[i].uid==userid)
-        {
-            for(int j=0;j<pd.all_prof[i].pb.size();j++)
-            {
-                if(pd.all_prof[i].pb[j].bid==bookid)
-                {
-                    book b=pd.all_prof[i].pb[j];
-                    auto v=&(pd.all_prof[i].pb);
-                    v->erase(v->begin()+j);
-                    // pd.all_prof[i].pb.erase((pd.all_prof[i].pb).begin()+j);
-                    return b;
-                }
-            }
-        }
-    }
-    // return bd.all_books[0];
-}
+// book remove_book_from_user(int userid,int bookid)
+// {
+//     cout<<"call";
+//     cout<<userid<<" "<<bookid;
+//     cout<<"\n"<<sd.all_students.size()<<"\n";
+//     for(int i=0;i<sd.all_students.size();i++)
+//     {
+//         cout<<"a";
+//         if(sd.all_students[i].uid==userid)
+//         {
+//             cout<<"found\n";
+//             for(int j=0;j<sd.all_students[i].sb.size();j++)
+//             {
+//                 cout<<sd.all_students[i].sb.size()<<" ";
+//                 if(sd.all_students[i].sb[j].bid==bookid)
+//                 {
+//                     cout<<"\nbook found"<<sd.all_students[i].sb[j].title<<"   ";
+//                     book b=sd.all_students[i].sb[j];
+                    
+//                     // auto v=&(sd.all_students[i].sb);
+//                     // cout<<((v->begin()+j).title);
+//                     // v->erase(v->begin()+j);
+//                     sd.all_students[i].sb.erase(sd.all_students[i].sb.begin()+j);
+//                     cout<<"Boko erase\n";
+//                     return b;
+//                 }
+//             }
+//         }
+//     }
+//     for(int i=0;i<pd.all_prof.size();i++)
+//     {
+//         if(pd.all_prof[i].uid==userid)
+//         {
+//             for(int j=0;j<pd.all_prof[i].pb.size();j++)
+//             {
+//                 if(pd.all_prof[i].pb[j].bid==bookid)
+//                 {
+//                     book b=pd.all_prof[i].pb[j];
+//                     auto v=&(pd.all_prof[i].pb);
+//                     v->erase(v->begin()+j);
+//                     // pd.all_prof[i].pb.erase((pd.all_prof[i].pb).begin()+j);
+//                     return b;
+//                 }
+//             }
+//         }
+//     }
+//     // return bd.all_books[0];
+// }
 int main()
 {
     
@@ -616,7 +631,17 @@ int main()
                             else if(p==4)
                             cout<<"\nYou are not the owner of book , you can't return it\n";
                             else{
-                                book b=remove_book_from_user(curr.uid,z);
+                                book b;
+                                for(int i=0;i<curr.sb.size();i++)
+                                {
+                                    if(curr.sb[i].bid==z)
+                                    {
+                                        b=curr.sb[i];
+                                        curr.sb.erase(curr.sb.begin()+i);
+                                        break;
+                                    }
+                                }
+                                // book b=remove_book_from_user(curr.uid,z);
                                 cout<<"Book Details : \n";
                                 cout<<"Book ID : "<<b.bid<<"\n"; 
                                 cout<<"Book title : "<<b.title<<"\n";
@@ -769,9 +794,16 @@ int main()
                             else if(p==1)
                             cout<<"\nBook currently not available\n";
                             else{
-                                curr.pb.push_back(bd.search_book(z));
+                                // curr.pb.push_back(bd.search_book(z));
+                                // curr.book_issued++;
+                                // cout<<"\nBook issued\n";
+                                book b=bd.search_book(z);
+                                curr.pb.push_back(b);
                                 curr.book_issued++;
                                 cout<<"\nBook issued\n";
+                                cout<<"\nDetails of book issued : \n";
+                                cout<<"Book Title : "<<b.title<<"\n";
+                                cout<<"Book Author : "<<b.author<<"\n\n\n";
                             }
                             cout<<"\nPress Enter to go back\n";
                             getchar();
@@ -790,7 +822,17 @@ int main()
                             else if(p==4)
                             cout<<"\nYou are not the owner of book , you can't return it\n";
                             else{
-                                book b=remove_book_from_user(curr.uid,z);
+                                book b;
+                                for(int i=0;i<curr.pb.size();i++)
+                                {
+                                    if(curr.pb[i].bid==z)
+                                    {
+                                        b=curr.pb[i];
+                                        curr.pb.erase(curr.pb.begin()+i);
+                                        break;
+                                    }
+                                }
+                                // book b=remove_book_from_user(curr.uid,z);
                                 cout<<"Book Details : \n";
                                 cout<<"Book ID : "<<b.bid<<"\n"; 
                                 cout<<"Book title : "<<b.title<<"\n";
