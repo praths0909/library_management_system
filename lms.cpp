@@ -20,29 +20,29 @@ UserId and BookID are numeric and you should remember them to access your accoun
 // Some git testing changes
 #include<bits/stdc++.h>
 using namespace std;
-class book{
+class book{                                //class book
     public:
-    static int ID1;
-    int bid;
-    string title;
-    string author;
-    int available;
-    int owner;
-    book(){
+    static int ID1;                        //static int to give each book a unique ID
+    int bid;                               //book ID
+    string title;                          //Book Name
+    string author;                         //Book Author
+    int available;                         // If book is available in library , available=1 ,else, available=0
+    int owner;                             // = book onwer id if book issued , else = -1
+    book(){                                // Constructor , ID1 increases whenever book created
         ID1++;
-        bid=ID1;
+        bid=ID1;                           // assigning ID1 value to book ID
     }
 
 };
 int book::ID1=0;
-class user{
+class user{                                 // class user , will have student, professor , librarian as subclass
     public:
-    static int ID2;
-    int uid;
-    string name;
-    string password;
-    int book_issued;
-    user()
+    static int ID2;                         //static int to give each user a unique ID
+    int uid;                                //user ID
+    string name;                            //User Name
+    string password;                        //User Password
+    int book_issued;                        // Number of book issued
+    user()                                  //Constructor
     {
         uid=ID2;
         book_issued=0;
@@ -51,18 +51,18 @@ class user{
 int user::ID2=0;
 class prof:public user{
     public:
-    int fine;
+    int fine;                                //fine 
     prof(){
         ID2++;
     }
-    vector<book>pb;
-    void display()
+    vector<book>pb;                           //vector of books of prof(pb=prof books)
+    void display()                            //Display prof profile
     {
         cout<<"\nUser ID: "<<uid<<"\n";
         cout<<"Name: "<<name<<"\n";
         cout<<"Role : Professor\n";
     }
-    void display_issued_books()
+    void display_issued_books()              //Display list of issued books with book id, book title , book author
     {
         cout<<"\nYou have issued "<<pb.size()<<" books.\n";
         for(int i=0;i<pb.size();i++)
@@ -72,18 +72,18 @@ class prof:public user{
 
 class student:public user{
     public:
-    int fine;
+    int fine;                                //fine 
     student(){
         ID2++;
     }
-    vector<book>sb;
-    void display()
+    vector<book>sb;                             //vector of books of student(sb=student books)
+    void display()                              //Display student profile
     {
         cout<<"\nUser ID: "<<uid<<"\n";
         cout<<"Name: "<<name<<"\n";
         cout<<"Role : Student\n";
     }
-    void display_issued_books()
+    void display_issued_books()                 //Display list of issued books with book id, book title , book author
     {
         cout<<"\nYou have issued "<<sb.size()<<" books.\n";
         for(int i=0;i<sb.size();i++)
@@ -95,7 +95,7 @@ class lib:public user{
     lib(){
         ID2++;
     }
-    void display()
+    void display()                                //Display Librarian profile
     {
         cout<<"\nUser ID: "<<uid<<"\n";
         cout<<"Name: "<<name<<"\n";
@@ -108,24 +108,32 @@ class prof_database{
     void add_prof(prof a){
         all_prof.push_back(a);
     }
-    void remove_prof(int id)
-    {
-        for(int i=0;i<all_prof.size();i++)
-        {
-            if(all_prof[i].uid==id)
-            all_prof.erase(all_prof.begin()+i);
-        }
-        cout<<"Professor Removed\n";
-        return;
-    }
-    int is_prof_present(int id)
+    int is_prof_present(int id)            //If prof with uid id present ,return 1 else return 0
     {
         for(int i=0;i<all_prof.size();i++)
         if(all_prof[i].uid==id)
         return 1;
         return 0;
     }
-    prof search_prof(int id){
+    void remove_prof(int id)             //remove prof with uid "id"
+    {
+        if(is_prof_present(id)){
+        cout<<"This professor is not present in database";
+        return;}
+        for(int i=0;i<all_prof.size();i++)
+        {
+            if(all_prof[i].uid==id){
+                cout<<"Professor "<<all_prof[i].name<< " Removed\n";
+                all_prof.erase(all_prof.begin()+i);
+            }
+        }
+        
+        return;
+    }
+ 
+    prof search_prof(int id){              //returns prof with uid id object //called only when prof is present with this uid 
+    // if(is_prof_present(id))
+    // cout<<"This professor is not present in database";
     for(int i=0;i<all_prof.size();i++)
     {
         if(all_prof[i].uid==id)
@@ -173,6 +181,9 @@ class student_database{
     }
     void remove_student(int id)
     {
+        if(is_student_present(id)){
+       cout<<"This Student is not present in database";
+       return;}
         for(int i=0;i<all_students.size();i++)
         {
             if(all_students[i].uid==id)
@@ -205,6 +216,7 @@ class book_database{
         a.available=1;
         a.owner=-1;
         all_books.push_back(a);
+        cout<<"Details of book added:\nTitle : "<<a.title<<"   Author : "<<a.author<<"    Book ID : "<<a.bid<<"\n";
     }
     int delete_book(int id)
     {
@@ -224,7 +236,10 @@ class book_database{
         cout<<"\n";
         for(int i=0;i<all_books.size();i++)
         {
-            cout<<"Book ID : "<<all_books[i].bid<<"      Book Name : "<<all_books[i].title<<"      Book Author : "<<all_books[i].author<<"\n";
+            if(all_books[i].available==1)
+                        cout<<"Book ID : "<<all_books[i].bid<<"      Book Name : "<<all_books[i].title<<"      Book Author : "<<all_books[i].author<<"     Book owner id: Book Not issued yet"<<"\n";
+            else
+            cout<<"Book ID : "<<all_books[i].bid<<"      Book Name : "<<all_books[i].title<<"      Book Author : "<<all_books[i].author<<"     Book owner id: "<<all_books[i].owner<<"\n";
         }
     }
     void display_available()
@@ -233,7 +248,7 @@ class book_database{
         for(int i=0;i<all_books.size();i++)
         {
             if(all_books[i].available==1)
-              cout<<"Book ID : "<<all_books[i].bid<<"      Book Name : "<<all_books[i].title<<"      Book Author : "<<all_books[i].author<<"\n";
+              cout<<"Book ID : "<<all_books[i].bid<<"      Book Name : "<<all_books[i].title<<"      Book Author : "<<all_books[i].author<<"     Book owner id: "<<all_books[i].owner<<"\n";
         }
     }
     int issue_book(int bookid,int userid)
@@ -301,10 +316,10 @@ class book_database{
 //-----------------------------------------------------------------------------------------------------------------
 
 int first_call(){
-    cout<<"\n\nAre you a student, professor or librarian? \nPress 1 if you are student.\nPress 2 if you are professor.\nPress 3 if you are librarian.\n\n";
+    cout<<"\n\nAre you a student, professor or librarian? \nPress 1 if you are student.\nPress 2 if you are professor.\nPress 3 if you are librarian.\nPress 4 to exit.\n\n";
     int x;
     cin>>x;
-    if(x==1||x==2||x==3)
+    if(x==1||x==2||x==3||x==4)
     return x;
     else{
     cout<<"Please enter valid input\n";
@@ -452,6 +467,8 @@ int main()
     while(1)
     {
         int x=first_call();
+        if(x==4)
+        return 0;
         if(x==1)
         {
             cout<<"\nWelcome,Student\n\n";
@@ -544,7 +561,7 @@ int main()
                             cout<<"\nEnter bookid of book to be returned\n";
                             int z;
                             cin>>z;
-                            int p=bd.issue_book(z,curr.uid);
+                            int p=bd.return_book(z,curr.uid);
                             if(p==3)
                             cout<<"\nThis Book is not present in library\n";
                             else if(p==1)
@@ -611,11 +628,12 @@ int main()
                     getline(cin,x);
                     newst.name=x;
                     cout<<"Enter your password : ";
-                    getchar();
+                    // getchar();
                     getline(cin,x);
                     newst.password=x;
                     sd.add_student(newst);
-                    cout<<"\nSuccessfully Registered\n";
+                    // cout<<"\nSuccessfully Registered     \n"<<newst.name<<"    "<<newst.password;
+                    cout<<"\n Student with 'user id' :  "<<newst.uid<<",Name : "<<newst.name<<" Successfully Registered\n";
                     continue;
 
                 }
@@ -709,13 +727,13 @@ int main()
                             cout<<"\nEnter bookid of book to be returned\n";
                             int z;
                             cin>>z;
-                            int p=bd.issue_book(z,curr.uid);
+                            int p=bd.return_book(z,curr.uid);
                             if(p==3)
                             cout<<"\nThis Book is not present in library\n";
                             else if(p==1)
                             cout<<"\nBook is alredy unissued\n";
                             else{
-                                //remove book in student
+                                //remove book in professor
                                 cout<<"\nBook Returned\n";
                             }
                             cout<<"\nPress Enter to go back\n";
