@@ -1,16 +1,16 @@
 /*By default , these are the registered users in Library Management System 
 Students:
-UserId : 0, Name : Pratham , password : pratham
+UserId : 0, Name : Pratham Jain , password : pratham
 Professors:
-UserId : 1, Name : Indranil , password : cs253
+UserId : 1, Name : Indranil Saha , password : cs253
 Librarian:
 UserId : 2, Name : XYZ , password : library
 
 By default, these are the books present 
-BookId : 1, Name : thermo , owner : narayan
-BookId : 2, Name : computer , owner : pinaki
-BookId : 3, Name : hss , owner : ABC
-BookId : 4, Name : arch , owner : urbic
+BookId : 1, Name : Thermodynamics ,  Author : Cengel_Boles , Owner = 0
+BookId : 2, Name : Organic Chemistry , Author : Clayden , Owner = 1
+BookId : 3, Name : Verilog , Author : Palnitkar , Owner = Not issued by default
+BookId : 4, Name : Computer Architecture , Author : Patterson , Owner = Not issued by default
 
 
 Some general Instructions
@@ -20,6 +20,7 @@ UserId and BookID are numeric and you should remember them to access your accoun
 // Some git testing changes
 #include<bits/stdc++.h>
 using namespace std;
+
 class book{                                //class book
     public:
     static int ID1;                        //static int to give each book a unique ID
@@ -195,6 +196,9 @@ class student_database{
 
 };
 
+student_database sd;
+prof_database pd;
+lib_database ld;
 
 class book_database{
     public:
@@ -225,6 +229,53 @@ class book_database{
             if(all_books[i].bid==id)
             {
                //delete from owner
+                if(all_books[i].available==0)
+                {
+                    int owner=all_books[i].owner;
+                    int prof_or_stud=-1;                //0 if student,else 1
+                    student curr;
+                    for(int i=0;i<sd.all_students.size()&&prof_or_stud==-1;i++)
+                    {
+                        if(sd.all_students[i].uid==owner){
+                        curr=sd.all_students[i];
+                        prof_or_stud=0;
+                        }
+                    }
+                    if(prof_or_stud==0)
+                    {
+                        for(int i=0;i<curr.sb.size();i++)
+                        {
+                            if(curr.sb[i].bid==id)
+                            {
+                                curr.sb.erase(curr.sb.begin()+i);
+                                break;
+
+                            }
+
+                        }
+
+                    }
+                    prof curr1;
+                    for(int i=0;i<pd.all_prof.size()&&prof_or_stud==-1;i++)
+                    {
+                        if(pd.all_prof[i].uid==owner){
+                        curr1=pd.all_prof[i];
+                        prof_or_stud=1;
+                        }
+                    }
+                    if(prof_or_stud==1)
+                    {
+                       for(int i=0;i<curr1.pb.size();i++)
+                        {
+                            if(curr1.pb[i].bid==id)
+                            {
+                                curr1.pb.erase(curr1.pb.begin()+i);
+                                break;
+                            }
+
+                        } 
+                    }
+                }
                 all_books.erase(all_books.begin()+i);
                 return 1;
             }
@@ -319,6 +370,7 @@ class book_database{
         return all_books[0];//control never reaches here
     }
 };
+book_database bd;
 
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -409,10 +461,7 @@ int lib_function_call()
         return lib_function_call();
     }
 }
-student_database sd;
-prof_database pd;
-lib_database ld;
-book_database bd;
+
 // book remove_book_from_user(int userid,int bookid)
 // {
 //     cout<<"call";
@@ -466,28 +515,28 @@ int main()
     
     //----------------------------------------------------------------------------------------------------------------
     book b1;
-    b1.title="thermo";
-    b1.author="narayan";
+    b1.title="Thermodynamics";
+    b1.author="Cengel_Boles";
     b1.available=0;
     b1.owner=0;
 
     book b2;
-    b2.title="computer";
-    b2.author="pinaki";
+    b2.title="Organic Chemistry";
+    b2.author="Clayden";
     b2.available=0;
     b2.owner=1;
     
     book b3;
     // b3.bid=2;
-    b3.title="hss";
-    b3.author="ABC";
+    b3.title="Verilog";
+    b3.author="Palnitkar";
     b3.available=1;
     b3.owner=-1;
     
     book b4;
     // b4.bid=3;
-    b4.title="arch";
-    b4.author="urbic";
+    b4.title="Computer Architecture";
+    b4.author="Patterson";
     b4.available=1;
     b4.owner=-1;
 
@@ -498,14 +547,14 @@ int main()
 
     student s1;
     s1.uid=0;
-    s1.name="Pratham";
+    s1.name="Pratham Jain";
     s1.password="pratham";
     s1.fine=0;
     s1.sb.push_back(b1);
 
     prof p1;
     p1.uid=1;
-    p1.name="Indranil";
+    p1.name="Indranil Saha";
     p1.password="cs253";
     p1.fine=0;
     p1.pb.push_back(b2);
